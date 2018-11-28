@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>仿百度自动下拉框</title>
+    <style>
+        *{
+            margin: 0;padding: 0;
+            list-style: none;
+        }
+        .content{
+            width: 100%;
+            height: auto;
+        }
+        .first{
+            width: 500px;
+            height: 400px;
+            /*  */
+            margin: 0 auto;
+        }
+        #kw{
+            margin-top: 200px;
+            width: 400px;
+            border-color: green;
+            border-radius: 5px 0 0 5px;
+            border-right: none;
+            padding: 12px;
+            position: relative;
+            outline:none;
+        }
+        #btn{
+            width: 100px;
+            height: 30px;
+            position: absolute;
+            top: 200px;
+            height: 43px;
+             background: none;
+             border: 2px solid green;
+             border-radius: 0 5px 5px 0;
+             border-left: none;
+             outline:none;
+             cursor: pointer;
+             font-size: 16px;
+        }
+        #btn:hover{
+             font-size: 16px;
+           color: green;
+        }
+        #pop {
+            width: 303px;
+            border: 1px solid green;
+            padding: 0px;
+            position: relative;
+            left: 6px;
+            top: 6px;
+        }
+
+
+        #pop ul li {
+            padding-left: 5px;
+            cursor: pointer;
+        }
+
+
+        #pop ul li:hover {
+            background-color: #CCC;
+        }
+    </style>
+    <script>
+        window.onload=function(){
+            var box = document.getElementsByClassName("first")[0];
+            var oKw = document.getElementById('kw');
+
+
+            var datas = ["asss","aeee","bfdd","ces","des","egg","eat","gds","eku","xlk"];
+
+            oKw.onkeyup = function(){
+                // alert(this.value)
+                var val = this.value;
+                var filterArr = [];
+
+                // alert(datas.indexOf(val))
+                for(var i=0;i<datas.length;i++){
+                    var data = datas[i];
+                    if(data.indexOf(val)===0){
+                        filterArr.push(data)
+                        
+                    }
+                }
+                console.log(filterArr);
+
+                var popDiv=document.getElementById("pop");
+                if(popDiv){
+                    box.removeChild(popDiv)
+                }
+
+                if(filterArr.length ===0){
+                    return;
+                }
+
+                if(val === ""){
+                    return;
+                }
+
+                var oDiv = document.createElement("div");
+                oDiv.id = "pop";
+                box.appendChild(oDiv);
+
+                var oUL = document.createElement("ul");
+                oDiv.appendChild(oUL);
+
+                for(var i=0;i<filterArr.length;i++){
+                    var oLi = document.createElement("li");
+                    oLi.setAttribute('class','yihang');
+                    oUL.appendChild(oLi);
+                    oLi.innerText = filterArr[i];
+
+                }
+
+
+                var dLi = document.getElementsByTagName("li");
+                for(var i=0;i<dLi.length;i++){
+                    dLi[i].onclick = function(){
+                        oKw.value = this.innerText;
+                    }
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="first">
+                <input type="text" id="kw">
+                <input type="button" id="btn" value="搜索">
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

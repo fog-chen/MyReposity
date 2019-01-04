@@ -1,0 +1,177 @@
+<template>
+  <div class="books">
+    <div class="topNav">
+      <div>喜马拉雅图书租赁系统</div>
+      <div>
+        <el-dropdown @command="handleCommand">
+          <span class="el-dropdown-link">
+            欢迎您，
+            <span class="admin">chen</span>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>个人信息</el-dropdown-item>
+            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+    </div>
+    <div class="leftNav-content">
+      <!-- 侧边 -->
+      <div class="leftnav">
+        <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
+          <el-radio-button :label="false">展开</el-radio-button>
+          <el-radio-button :label="true">收起</el-radio-button>
+        </el-radio-group>
+        <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" @select="handleSelect" :collapse="isCollapse">
+          <el-menu-item index="1">
+            <i class="el-icon-location"></i>
+            <span slot="title">图书首页</span>
+          </el-menu-item>
+          <el-menu-item index="2">
+            <i class="el-icon-menu"></i>
+            <span slot="title">图书信息</span>
+          </el-menu-item>
+          <el-menu-item index="3">
+            <i class="el-icon-document"></i>
+            <span slot="title">借阅信息</span>
+          </el-menu-item>
+          <el-menu-item index="4">
+            <i class="el-icon-setting"></i>
+            <span slot="title">用户信息</span>
+          </el-menu-item>
+          <el-menu-item index="5">
+            <i class="el-icon-location"></i>
+            <span slot="title">关于图书</span>
+          </el-menu-item>
+        </el-menu>
+      </div>
+      <div class="content">
+        <div>
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :key="item" v-for="item in breadcrumbItems">首页/{{item}}</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+        <div style="margin-top:10px">
+          <router-view></router-view>
+          <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'books',
+  data () {
+    return {
+      isCollapse: true,
+      breadcrumbItems: ['图书首页']
+    }
+  },
+  methods: {
+    handleOpen (key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose (key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleCommand (logout) {
+      this.$router.push('/')
+      // console.log("this is a test");
+    },
+    handleSelect (key, keyPath) {
+      switch (key) {
+        case '1':
+          this.$router.push('/bookIndex');
+          this.breadcrumbItems = ['图书首页']
+          break;
+        case '2':
+          this.$router.push('/bookInformation');
+          this.breadcrumbItems = ['图书信息']
+          break;
+        case '3':
+          this.$router.push('/borrowinfo');
+          this.breadcrumbItems = ['借阅信息']
+          break;
+        case '4':
+          this.$router.push('/userInformation');
+          this.breadcrumbItems = ['用户信息']
+          break;
+        case '5':
+          this.$router.push('/about');
+          this.breadcrumbItems = ['关于图书']
+          break;
+      }
+    }
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+.books {
+  // height: 100%;
+  background: rgba(244, 244, 243, 0.4);
+}
+.topNav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  background: #bababa;
+  /* justify-content: space-around; */
+}
+// .leftNav-content {
+//   width: 100%;
+//   // height: 100%;
+
+// }
+.admin {
+  color: azure;
+}
+.leftNav-content {
+  // height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.el-row {
+  height: 100%;
+}
+// cc {
+//   width: 10%;
+// }
+.leftnav {
+  // height: 100%;
+  background: #fff;
+  // width: @cc;
+  // float: left;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+.content {
+  height: auto !important;
+  width: 100%;
+  margin: 10px 0 0 20px;
+  .admin;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  // overflow: hidden;
+}
+.clear {
+  clear: both;
+  height: 0;
+  font-size: 1px;
+  line-height: 0px;
+}
+</style>

@@ -98,18 +98,17 @@ export default {
 }
 .bookimg {
   height: 160px;
-  /* box-shadow: 1px 1px 1px rgb(245, 223, 240); */
   overflow: hidden;
 }
 .card {
   width: 250px;
   height: 250px;
   margin: 10px;
-  /* background: #efefef; */
   border: 1px solid #efefef;
   float: left;
   border-radius: 2px;
   background: #fff;
+  transition: 0.7s;
 }
 .hello {
   margin: 0 15px;

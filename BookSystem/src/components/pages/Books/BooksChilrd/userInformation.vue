@@ -89,7 +89,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="operation" label="操作" :formatter="formatter">
+        <el-table-column prop="operation" label="操作">
           <template slot-scope="scope">
             <div>
               <p>

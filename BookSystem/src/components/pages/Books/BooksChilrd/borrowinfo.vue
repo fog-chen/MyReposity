@@ -43,7 +43,7 @@
           <template slot-scope="scope">
             <div>
               <p>
-                {{scope.row.borrowDate}}
+                {{stampToDate(scope.row.borrowDate)}}
               </p>
             </div>
           </template>
@@ -52,12 +52,12 @@
           <template slot-scope="scope">
             <div>
               <p>
-                {{scope.row.returnDate}}
+                {{stampToDate(scope.row.returnDate)}}
               </p>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="operation" label="操作" :formatter="formatter">
+        <el-table-column prop="operation" label="操作">
           <template slot-scope="scope">
             <div>
               <p>
@@ -76,11 +76,13 @@
 
 <script>
 import axios from 'axios';
+import { stampToDate } from '../../../common/date';
 export default {
   name: 'borrowinfo',
   data () {
     return {
-      tableData: []
+      tableData: [],
+      stampToDate: stampToDate
     }
   },
   created: function () {

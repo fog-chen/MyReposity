@@ -19,10 +19,14 @@
     <div class="leftNav-content">
       <!-- 侧边 -->
       <div class="leftnav">
-        <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
+        <!-- <el-radio-group v-model="isCollapse" style="margin-bottom: 20px;">
           <el-radio-button :label="false">展开</el-radio-button>
           <el-radio-button :label="true">收起</el-radio-button>
-        </el-radio-group>
+        </el-radio-group> -->
+        <div class="collapse" v-model="isCollapse">
+          <span @click="open" v-if="isCollapse" class="state">》</span>
+          <span @click="shrink" v-if="!isCollapse" class="state">《</span>
+        </div>
         <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" @select="handleSelect" :collapse="isCollapse">
           <el-menu-item index="1">
             <i class="el-icon-location"></i>
@@ -73,12 +77,12 @@ export default {
     }
   },
   methods: {
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath);
-    },
+    // handleOpen (key, keyPath) {
+    //   console.log(key, keyPath);
+    // },
+    // handleClose (key, keyPath) {
+    //   console.log(key, keyPath);
+    // },
     handleCommand (logout) {
       this.$router.push('/')
       // console.log("this is a test");
@@ -106,6 +110,12 @@ export default {
           this.breadcrumbItems = ['关于图书']
           break;
       }
+    },
+    shrink: function () {
+      this.isCollapse = true
+    },
+    open: function () {
+      this.isCollapse = false
     }
   }
 }
@@ -142,15 +152,20 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.el-row {
-  height: 100%;
-}
+// .el-menu--collapse {
+//   width: 100%;
+// }
+// .el-row {
+//   height: 100%;
+// }
 // cc {
 //   width: 10%;
 // }
 .leftnav {
   // height: 100%;
   background: #fff;
+  position: relative;
+  margin-right: 10px;
   // width: @cc;
   // float: left;
 }
@@ -158,8 +173,32 @@ export default {
   width: 200px;
   min-height: 400px;
 }
+.state {
+  display: inline-block;
+  color: rgb(152, 212, 200);
+}
+.collapse,
+.state {
+  width: 20px;
+  height: 40px;
+  border-radius: 0 50% 50% 0;
+  // border-radius: 50%;
+  background: #0a8;
+  // border: 1px solid #0a8;
+  cursor: pointer;
+  text-align: center;
+  line-height: 40px;
+}
+.collapse {
+  position: absolute;
+  // top: 45%;
+  top: 200px;
+  right: -20px;
+  // left: 100px;
+  z-index: 899;
+}
 .content {
-  height: auto !important;
+  // height: auto !important;
   width: 100%;
   margin: 10px 0 0 20px;
   .admin;
@@ -168,10 +207,10 @@ export default {
   background: #fff;
   // overflow: hidden;
 }
-.clear {
-  clear: both;
-  height: 0;
-  font-size: 1px;
-  line-height: 0px;
-}
+// .clear {
+//   clear: both;
+//   height: 0;
+//   font-size: 1px;
+//   line-height: 0px;
+// }
 </style>

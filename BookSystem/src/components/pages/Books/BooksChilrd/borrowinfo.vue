@@ -57,6 +57,15 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column prop="classification" label="分类" sortable>
+          <template slot-scope="scope">
+            <div>
+              <p>
+                {{scope.row.classification}}
+              </p>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="operation" label="操作">
           <template slot-scope="scope">
             <div>
@@ -64,7 +73,9 @@
                 <!-- <el-button>查看</el-button>
                 <el-button>还书</el-button> -->
                 <span class="check">查看</span>
-                <span class="return">还书</span>
+                <span class="return" v-if="scope.row.returnDate!==''?false:true" @click="returnBook(scope.row)">还书</span>
+                <span class="check" v-else @click="remove(scope.row)">删除</span>
+                <!-- scope.row.returnDate!==''?false:true -->
               </p>
             </div>
           </template>
@@ -75,25 +86,99 @@
 </template>
 
 <script>
-import axios from 'axios';
+// <!-- import axios from 'axios'; -->
 import { stampToDate } from '../../../common/date';
+import { borrow } from '../../../api/borrow/borrow'
 export default {
   name: 'borrowinfo',
   data () {
     return {
       tableData: [],
-      stampToDate: stampToDate
+      stampToDate: stampToDate,
+      isReturn: false
     }
   },
-  created: function () {
-    axios.get('https://www.easy-mock.com/mock/5c28d4432140e71d51972e3a/books/borrow')
-      .then(response => {
-        this.tableData = response.data.data
+  methods: {
+    init: function () {
+      this.getBorrowInfo()
+    },
+    getParams: function () {
+      const bookNum = this.tableData.bookNum
+      const bookName = this.tableData.bookName
+      const bookAutor = this.tableData.bookAutor
+      const Borrower = this.tableData.Borrower
+      const borrowDate = this.tableData.borrowDate
+      const returnDate = this.tableData.returnDate
+      const classification = this.tableData.classification
+      let req = {
+        bookNum,
+        bookName,
+        bookAutor,
+        Borrower,
+        borrowDate,
+        returnDate,
+        classification
+      }
+      return req
+    },
+    getBorrowInfo () {
+      let req = this.getParams()
+      borrow(req, res => {
+        if (res.data && res.data.length) {
+          this.tableData = res.data
+        } else {
+          this.tableData = []
+        }
+      }, (err) => {
+        // this.logShow('获取借阅信息失败 resError:', err, 'ERROR')
       })
-      .catch(error => {
-        console.log(error)
+    },
+    returnBook (val) {
+      var date = Date.parse(new Date())
+      // this.tableData
+      // alert('确定还书？，当前日期是' + stampToDate(date))
+      // val.returnDate = date
+      this.$confirm('当前时间为：' + stampToDate(date), '确认还书？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        val.returnDate = date
+        this.$message({
+          type: 'success',
+          message: '还书成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消操作'
+        })
       })
+    },
+
+    // 删除
+    remove (val) {
+      this.tableData = this.tableData.filter(item => item !== val)
+    }
+  },
+  computed: {
+    // scope.row.returnDate!==''?false:true
+    // isBorrow (val) {
+    //   this.returnDate !== '' ? false : true
+    // }
+  },
+  mounted () {
+    this.init()
   }
+  // created: function () {
+  //   axios.get('https://www.easy-mock.com/mock/5c28d4432140e71d51972e3a/books/borrow')
+  //     .then(response => {
+  //       this.tableData = response.data.data
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //     })
+  // }
 }
 </script>
 

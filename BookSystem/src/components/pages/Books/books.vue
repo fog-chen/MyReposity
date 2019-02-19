@@ -1,18 +1,19 @@
 <template>
   <div class="books">
     <div class="topNav">
-      <div>喜马拉雅图书租赁系统</div>
+      <div class="title">喜马拉雅图书租赁系统</div>
       <div>
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
             欢迎您，
-            <span class="admin">chen</span>
+            <span class="admin">{{name}}</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>个人信息</el-dropdown-item>
+            <el-dropdown-item command="personalInfo">个人信息</el-dropdown-item>
             <el-dropdown-item command="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
+
         </el-dropdown>
       </div>
     </div>
@@ -27,7 +28,7 @@
           <span @click="open" v-if="isCollapse" class="state">》</span>
           <span @click="shrink" v-if="!isCollapse" class="state">《</span>
         </div>
-        <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" @select="handleSelect" :collapse="isCollapse">
+        <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @select="handleSelect" :collapse="isCollapse" active-text-color="#ffd04b" :default-active="defaultUrl">
           <el-menu-item index="1">
             <i class="el-icon-location"></i>
             <span slot="title">图书首页</span>
@@ -68,46 +69,73 @@
 </template>
 
 <script>
+import { setCookie, getCookie, delCookie } from '../../common/cookie'
 export default {
   name: 'books',
   data () {
     return {
       isCollapse: true,
-      breadcrumbItems: ['图书首页']
+      breadcrumbItems: ['图书首页'],
+      name: '',
+      defaultUrl: '1'
+    }
+  },
+  mounted () {
+    let newname = getCookie('name')
+    this.name = newname
+
+    if (newname == '') {
+      this.$router.push('/')
     }
   },
   methods: {
-    // handleOpen (key, keyPath) {
-    //   console.log(key, keyPath);
+
+    // handleCommand (logout) {
+    //   // this.$router.push('/')
+    //   // console.log("this is a test");
+    //   delCookie('name')
+    //   this.$router.push('/')
     // },
-    // handleClose (key, keyPath) {
-    //   console.log(key, keyPath);
+    // handleCommand (PersonalInfo) {
+    //   // this.$router.push('/')
+    //   // console.log("this is a test");
+    //   alert('个人信息')
     // },
-    handleCommand (logout) {
-      this.$router.push('/')
-      // console.log("this is a test");
+    handleCommand (command) {
+      if (command === 'personalInfo') {
+        alert('个人信息')
+      }
+      if (command === 'logout') {
+        delCookie('name')
+        this.$router.push('/')
+      }
     },
     handleSelect (key, keyPath) {
       switch (key) {
         case '1':
           this.$router.push('/bookIndex');
           this.breadcrumbItems = ['图书首页']
+          console.log(this.$router.push)
           break;
         case '2':
           this.$router.push('/bookInformation');
           this.breadcrumbItems = ['图书信息']
+          console.log(this.$router.push)
           break;
         case '3':
           this.$router.push('/borrowinfo');
           this.breadcrumbItems = ['借阅信息']
+          console.log(this.$router.push)
           break;
         case '4':
           this.$router.push('/userInformation');
           this.breadcrumbItems = ['用户信息']
+          console.log(this.$router.push)
           break;
         case '5':
           this.$router.push('/about');
           this.breadcrumbItems = ['关于图书']
+          console.log(this.$router.push)
           break;
       }
     },
@@ -118,13 +146,17 @@ export default {
       this.isCollapse = false
     }
   }
+
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
 .books {
+  width: 100%;
   // height: 100%;
+  // position: fixed;
+  min-height: 100%;
   background: rgba(244, 244, 243, 0.4);
 }
 .topNav {
@@ -135,7 +167,8 @@ export default {
   line-height: 50px;
   padding: 0 20px;
   box-sizing: border-box;
-  background: #bababa;
+  // background: #bababa;
+  background: -webkit-gradient(linear, 0 0, 100% 100%, from(#ace), to(#f96));
   /* justify-content: space-around; */
 }
 // .leftNav-content {
@@ -145,6 +178,9 @@ export default {
 // }
 .admin {
   color: azure;
+}
+.el-dropdown-link {
+  cursor: pointer;
 }
 .leftNav-content {
   // height: 100%;
@@ -165,6 +201,8 @@ export default {
   // height: 100%;
   background: #fff;
   position: relative;
+  bottom: 0;
+  left: 0;
   margin-right: 10px;
   // width: @cc;
   // float: left;
@@ -205,12 +243,10 @@ export default {
   display: flex;
   flex-direction: column;
   background: #fff;
+  padding: 20px 0 20px 10px;
   // overflow: hidden;
 }
-// .clear {
-//   clear: both;
-//   height: 0;
-//   font-size: 1px;
-//   line-height: 0px;
-// }
+.title:hover {
+  color: #615f5f;
+}
 </style>

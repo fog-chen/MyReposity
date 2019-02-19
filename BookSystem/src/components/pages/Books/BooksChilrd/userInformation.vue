@@ -95,8 +95,8 @@
               <p>
                 <!-- <el-button>查看</el-button>
                 <el-button>还书</el-button> -->
-                <span class="check">查看</span>
-                <span class="return">还书</span>
+                <span class="check">详情</span>
+                <span class="check" @click="remove(scope.row)">删除</span>
               </p>
             </div>
           </template>
@@ -108,7 +108,8 @@
 
 <script>
 // import axios from 'axios';
-import axios from 'axios';
+// import axios from 'axios';
+import { userInformation } from '../../../api/userInformation/userInformation'
 export default {
   name: 'userInformation',
   data () {
@@ -116,15 +117,54 @@ export default {
       tableData: []
     }
   },
-  created: function () {
-    axios.get('https://www.easy-mock.com/mock/5c28d4432140e71d51972e3a/books/userInformation')
-      .then(response => {
-        this.tableData = response.data.data
-        console.log(response)
+  methods: {
+    init: function () {
+      this.getUserInformation()
+    },
+    getParams: function () {
+      const userName = this.tableData.userName
+      const borrowNum = this.tableData.borrowNum
+      const returned = this.tableData.returned
+      const noReturn = this.tableData.noReturn
+      const sex = this.tableData.sex
+      const age = this.tableData.age
+      const deposit = this.tableData.deposit
+      const ID = this.tableData.ID
+      const reputationNum = this.tableData.reputationNum
+      let req = {
+        userName,
+        borrowNum,
+        returned,
+        noReturn,
+        sex,
+        age,
+        deposit,
+        ID,
+        reputationNum
+      }
+      return req
+    },
+    getUserInformation () {
+      let req = this.getParams()
+      userInformation(req, res => {
+        if (res.data && res.data.length) {
+          this.tableData = res.data
+        } else {
+          this.tableData = []
+        }
+      }, (err) => {
+        // this.logShow('获取借阅信息失败 resError:', err, 'ERROR')
       })
-      .catch(error => {
-        console.log(error)
-      })
+    },
+
+    // 删除
+    remove (val) {
+      this.tableData = this.tableData.filter(item => item !== val)
+    }
+
+  },
+  mounted () {
+    this.init()
   }
 }
 </script>

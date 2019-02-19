@@ -10,6 +10,8 @@ import about from '@/components/pages/Books/BooksChilrd/about'
 
 Vue.use(Router)
 
+Vue.config.productionTip = false
+
 export default new Router({
   routes: [
     {
@@ -23,22 +25,47 @@ export default new Router({
       component: books,
       children: [
         {
-          path: '/bookIndex', component: bookIndex
+          path: '/bookIndex',
+          component: bookIndex,
+          // meta: {
+          //   requireAuth: true
+          // }
         },
         {
-          path: '/bookInformation', component: bookInformation
+          path: '/bookInformation',
+          component: bookInformation,
+          // meta: {
+          //   requireAuth: true
+          // }
         },
         {
-          path: '/borrowinfo', component: borrowinfo
+          path: '/borrowinfo',
+          component: borrowinfo,
+          // meta: {
+          //   requireAuth: true
+          // }
         },
         {
-          path: '/userInformation', component: userInformation
+          path: '/userInformation',
+          component: userInformation,
+          // meta: {
+          //   requireAuth: true
+          // }
         },
         {
-          path: '/about', component: about
+          path: '/about',
+          component: about,
+          // meta: {
+          //   requireAuth: true
+          // }
         }
       ]
     }
 
   ]
 })
+
+
+// router.beforeEach((to,from,next) => {
+
+// })

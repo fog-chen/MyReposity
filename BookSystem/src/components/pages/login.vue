@@ -56,7 +56,10 @@ export default {
   name: 'login',
   data () {
     return {
-      user: {},
+      // user: {},
+      user: {
+        name: 'chen',
+        pwd: '123'      },
       // 表单验证
       rules: {
         name: [

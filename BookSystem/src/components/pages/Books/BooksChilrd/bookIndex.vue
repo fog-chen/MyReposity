@@ -7,10 +7,10 @@
       <li class="card cardadd">
         <i class="el-icon-plus avatar-uploader-icon" @click="isShowBox"></i>
       </li>
-      <li v-for="books in bookList" class="card cardlist">
+      <li v-for="(books,index) in bookList" class="card cardlist">
         <div class="bookimg">
-          <img :src="books.bookimg" alt="" class="image">
-          <!-- <img v-else src="../../../../assets/substitution.jpg" alt="" class="image"> -->
+          <img v-if="books.bookimg" :src="books.bookimg" alt="" class="image">
+          <img v-else src="../../../../assets/substitution.jpg" alt="" class="image">
         </div>
         <div style="padding: 14px;">
           <span>
@@ -18,13 +18,17 @@
           <div class="bottom clearfix">
             <span>{{books.bookAutor}}</span>
           </div>
+          <i class="el-icon-close close" @click="remove(index)"></i>
           <el-button type="text" class="button">借阅</el-button>
         </div>
       </li>
       <li class="clear"></li>
     </ul>
-    <!-- <p>ddddddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口ddddddddddddddddd的借口借口借口拒绝</p> -->
     <div class=" uploadbox " v-show="showBox"> </div>
+
+    <!-- 借阅 -->
+
+    <!-- 新增图书 -->
     <el-form :model="form " label-width="80px " class="uploadform " v-show="showBox" :rules="rules" ref="bookForm">
       <el-form-item label="书名 " prop="name">
         <el-input v-model="form.name " clearable></el-input>
@@ -56,17 +60,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="封面 " prop="cover">
-        <el-upload v-model="form.cover" class="avatar-uploader " action="123 " :show-file-list="false " :on-success="handleAvatarSuccess " :before-upload="beforeAvatarUpload ">
-          <img v-if="imageUrl " :src="imageUrl " class="avatar ">
+        <el-upload v-model="form.cover" class="avatar-uploader " action="addressUrl " :show-file-list="false " :on-success="handleAvatarSuccess " :before-upload="beforeAvatarUpload ">
+          <img v-if="imageUrl" :src="imageUrl " class="avatar ">
           <i v-else class="el-icon-plus avatar-uploader-icon avatar-uploader-bookicon"></i>
         </el-upload>
-        <!-- <el-upload v-model="form.cover " action="https://jsonplaceholder.typicode.com/posts/ " list-type="picture-card " :on-preview="handlePictureCardPreview " :on-remove="handleRemove ">
-          <i class="el-icon-plus "></i>
-        </el-upload> -->
-        <!-- <el-dialog :visible.sync="dialogVisible ">
-          <img width="100% " :src="dialogImageUrl " alt=" ">
-        </el-dialog> -->
-
       </el-form-item>
 
       <el-button type="primary " @click="onSubmit">立即创建</el-button>
@@ -102,7 +99,8 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       showBox: false,
-      imageUrl: false
+      imageUrl: '',
+      addressUrl: 'https://jsonplaceholder.typicode.com/posts/'
     }
   },
   // created: function () {
@@ -136,7 +134,7 @@ export default {
       let req = this.getParam()
       BookIndex(req, (res) => {
         if (res.data && res.data.length) {
-          this.bookList = res.data,
+          this.bookList = JSON.parse(localStorage.getItem('data')) || res.data,
             this.isShow = false
         } else {
           this.bookList = [],
@@ -158,11 +156,22 @@ export default {
     cancelBox: function () {
       this.showBox = false
     },
-    handleAvatarSuccess () {
-      alert("eee")
+    handleAvatarSuccess (res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
     },
-    beforeAvatarUpload () {
-      alert("eee")
+    beforeAvatarUpload (file) {
+      // 文件类型进行判断  
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+
     },
 
     // 创建新图书
@@ -170,25 +179,42 @@ export default {
       this.$refs.bookForm.validate((valid) => {
         if (valid) {
           this.bookList.push({
+            id: 3,
             bookName: this.form.name,
-            bookimg: this.form.cover,
+            bookimg: this.form.imageUrl,
             bookAutor: this.form.autor,
-            classification: this.form.classification          })
-          this.showBox = false
+            classification: this.form.classification
+          })
+
         }
       })
-    }
-    //   this.bookList.push({        bookName: this.form.name,
-    //     bookimg: this.form.cover,
-    //     bookAutor: this.form.autor,
-    //     classification: this.form.classification      })
-    // }
+      this.form.name = '',
+        this.form.autor = '',
+        this.form.cover = '',
+        this.form.classification = '',
+        this.showBox = false
+    },
+    // 删除
+    remove (val) {
+      this.bookList.splice(val, 1)
+    },
   },
+
   // computed:{
   //   lala:function(){
   //     return this.
   //   }
   // },
+  created () {
+
+  },
+  watch: {
+    bookList: {
+      handler () {
+        localStorage.setItem('data', JSON.stringify(this.bookList))
+      }, deep: true
+    }
+  },
   mounted () {
     this.init()
   }
@@ -238,8 +264,6 @@ export default {
 }
 .cards {
   position: relative;
-  /* top: 0;
-  left: 0; */
 }
 .cards,
 .without {
@@ -275,19 +299,14 @@ export default {
   box-shadow: 0 0 10px #d9d9d9;
   border-radius: 2px;
 }
+.cardlist {
+  position: relative;
+}
 .cardadd:hover {
   border-radius: 12px;
   border-color: #409eff;
 }
 .uploadbox {
-  /* width: 100%;
-  background: #c9c8c8;
-  opacity: 0.4;
-  position: absolute;
-  top: 0px;
-  left: 0;
-  bottom: 0; */
-  /* display: none; */
   background-color: #b3b3b3;
   position: absolute;
   top: 0;
@@ -300,14 +319,6 @@ export default {
   filter: alpha(opacity=80);
 }
 .uploadform {
-  /* border: 1px solid #d9d9d9;
-  border-radius: 5px;
-  padding: 30px 10px;
-  width: 600px;
-  background: #fff;
-  margin: 0 auto;
-  opacity: 1; */
-  /* display: none; */
   background-color: #ffffff;
   z-index: 1111;
   width: 600px;
@@ -318,23 +329,9 @@ export default {
   left: 0;
   border-radius: 5px;
   padding: 30px 10px;
-  /* bottom: 10px; */
   margin: auto;
 }
 
-/* .avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-} */
-/*
-.avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
-} */
 .avatar-uploader-bookicon:hover {
   border-color: #409eff;
 }
@@ -346,5 +343,21 @@ export default {
   height: 178px;
   line-height: 178px;
   text-align: center;
+}
+/* 关闭 */
+.close {
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  background: #fafafa;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+.close:hover {
+  transition: 0.3s;
+  transform: rotate(90deg);
 }
 </style>

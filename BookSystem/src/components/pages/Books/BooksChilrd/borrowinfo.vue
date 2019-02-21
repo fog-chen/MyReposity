@@ -1,5 +1,8 @@
 <template>
   <div class="hello">
+    <!-- <div>
+      <el-button type="primary">主要按钮</el-button>
+    </div> -->
     <div>
       <el-table :data="tableData" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}" border>
         <el-table-column prop="bookNum" label="编号" sortable>
@@ -125,7 +128,9 @@ export default {
       let req = this.getParams()
       borrow(req, res => {
         if (res.data && res.data.length) {
-          this.tableData = res.data
+          this.tableData = JSON.parse(localStorage.getItem('borrowInfo')) || res.data
+          console.log('借阅')
+          console.log(JSON.parse(localStorage.getItem('borrowInfo')))
         } else {
           this.tableData = []
         }
@@ -158,14 +163,31 @@ export default {
 
     // 删除
     remove (val) {
-      this.tableData = this.tableData.filter(item => item !== val)
+      this.$confirm('一旦删除就无法找回！', '确定删除此条借阅信息？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.tableData = this.tableData.filter(item => item !== val)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消操作'
+        })
+      })
+
     }
   },
-  computed: {
-    // scope.row.returnDate!==''?false:true
-    // isBorrow (val) {
-    //   this.returnDate !== '' ? false : true
-    // }
+  watch: {
+    tableData: {
+      handler () {
+        localStorage.setItem('borrowInfo', JSON.stringify(this.tableData))
+      }, deep: true
+    }
   },
   mounted () {
     this.init()

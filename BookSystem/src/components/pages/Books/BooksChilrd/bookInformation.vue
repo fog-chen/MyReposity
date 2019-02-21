@@ -139,7 +139,7 @@ export default {
       let req = this.getParams()
       Bookinformation(req, (res) => {
         if (res.data && res.data.length) {
-          this.tableData = res.data,
+          this.tableData = JSON.parse(localStorage.getItem('bookInfor')) || res.data,
             this.isShow = false
         } else {
           this.tableData = [],
@@ -147,16 +147,43 @@ export default {
         }
 
       }, (err) => {
-        // this.logShow('获取图书列表失败 resError:', err, 'ERROR')
+        this.logShow('获取图书信息失败', err, 'ERROR')
       })
     },
-    deleteRow (val) {//移除一行
-      // rows.splice(index, 1);//删掉该行
-      // alert('dcdc')
-      // console.log(this)
-      this.tableData = this.tableData.filter(item => item !== val)
+
+    //移除一行  删除
+    deleteRow (val) {
+      this.$confirm('一旦删除就无法找回！', '确定删除此条图书信息？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.tableData = this.tableData.filter(item => item !== val)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消操作'
+        })
+      })
     },
 
+  },
+  watch: {
+    tableData: {
+      handler () {
+        localStorage.setItem('bookInfor', JSON.stringify(this.tableData))
+      }, deep: true
+
+    },
+    //  bookList: {
+    //   handler () {
+    //     localStorage.setItem('data', JSON.stringify(this.bookList))
+    //   }, deep: true
+    // }
   },
   mounted () {
     this.init()

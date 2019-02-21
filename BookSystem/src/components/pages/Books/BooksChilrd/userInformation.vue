@@ -1,5 +1,8 @@
 <template>
   <div class="hello">
+    <div class="operation">
+      <el-button type="primary" size="small">添加用户</el-button>
+    </div>
     <div>
       <el-table :data="tableData" style="width: 100%" :default-sort="{prop: 'date', order: 'descending'}" border>
         <el-table-column prop="userName" label="用户">
@@ -33,7 +36,6 @@
           <template slot-scope="scope">
             <div>
               <p>
-                <!-- {{stampToDate(scope.row.date)}} -->
                 {{scope.row.noReturn}}
               </p>
             </div>
@@ -43,7 +45,6 @@
           <template slot-scope="scope">
             <div>
               <p>
-                <!-- {{stampToDate(scope.row.date)}} -->
                 {{scope.row.sex===1?'男':'女'}}
               </p>
             </div>
@@ -53,7 +54,6 @@
           <template slot-scope="scope">
             <div>
               <p>
-                <!-- {{stampToDate(scope.row.date)}} -->
                 {{scope.row.age}}
               </p>
             </div>
@@ -63,7 +63,6 @@
           <template slot-scope="scope">
             <div>
               <p>
-                <!-- {{stampToDate(scope.row.date)}} -->
                 {{scope.row.deposit}}
               </p>
             </div>
@@ -73,7 +72,6 @@
           <template slot-scope="scope">
             <div>
               <p>
-                <!-- {{stampToDate(scope.row.date)}} -->
                 {{scope.row.ID}}
               </p>
             </div>
@@ -83,7 +81,6 @@
           <template slot-scope="scope">
             <div>
               <p>
-                <!-- {{stampToDate(scope.row.date)}} -->
                 {{scope.row.reputationNum}}
               </p>
             </div>
@@ -93,8 +90,6 @@
           <template slot-scope="scope">
             <div>
               <p>
-                <!-- <el-button>查看</el-button>
-                <el-button>还书</el-button> -->
                 <span class="check">详情</span>
                 <span class="check" @click="remove(scope.row)">删除</span>
               </p>
@@ -107,8 +102,6 @@
 </template>
 
 <script>
-// import axios from 'axios';
-// import axios from 'axios';
 import { userInformation } from '../../../api/userInformation/userInformation'
 export default {
   name: 'userInformation',
@@ -148,20 +141,42 @@ export default {
       let req = this.getParams()
       userInformation(req, res => {
         if (res.data && res.data.length) {
-          this.tableData = res.data
+          this.tableData = JSON.parse(localStorage.getItem('userInfo')) || res.data
         } else {
           this.tableData = []
         }
       }, (err) => {
-        // this.logShow('获取借阅信息失败 resError:', err, 'ERROR')
+        this.logShow('获取用户信息失败', err, 'ERROR')
       })
     },
 
     // 删除
     remove (val) {
-      this.tableData = this.tableData.filter(item => item !== val)
+      this.$confirm('一旦删除就无法找回！', '确定删除此条用户信息？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.tableData = this.tableData.filter(item => item !== val)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消操作'
+        })
+      })
     }
 
+  },
+  watch: {
+    tableData: {
+      handler () {
+        localStorage.setItem('userInfo', JSON.stringify(this.tableData))
+      }, deep: true
+    }
   },
   mounted () {
     this.init()
@@ -181,5 +196,8 @@ export default {
 }
 .el-table td {
   padding: 0;
+}
+.operation {
+  margin-bottom: 30px;
 }
 </style>

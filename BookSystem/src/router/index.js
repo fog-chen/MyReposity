@@ -8,6 +8,7 @@ import borrowinfo from '@/components/pages/Books/BooksChilrd/borrowinfo'
 import userInformation from '@/components/pages/Books/BooksChilrd/userInformation'
 import about from '@/components/pages/Books/BooksChilrd/about'
 
+
 Vue.use(Router)
 
 Vue.config.productionTip = false
